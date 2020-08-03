@@ -1,21 +1,34 @@
+"""
+Time Series generating and plotting functions:
+- plot_series: plot a time series
+- trend: Generate a time series trend
+- seasonal_pattern
+- seasonality
+- noise
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 
-
+# Plot Series
 def plot_series(time, series, format="-", start=0, end=None, label=None):
-    """
-    plot a time series
+    """plot a time series
 
     Parameters
     ----------
-    time: time values
-    series: serie values
-    format: values plot format
-    start: first value to plot
-    end: last value to plot
-    label: legend
-
+    time: numpy array
+        time values
+    series: numpy array
+        serie values
+    format: char
+        values plot format
+    start: int
+        first value to plot
+    end: int
+        last value to plot
+    label: string
+        legend
     """
     plt.plot(time[start:end], series[start:end], format, label=label)
     plt.xlabel("Time")
@@ -25,21 +38,26 @@ def plot_series(time, series, format="-", start=0, end=None, label=None):
     plt.grid(True)
 
 
-##################
-# Generate Trend #
-##################
+# Generate Trend
 def trend(time, slope=0):
     """
-    Create a trend
+    Generate a time series trend
 
     Parameters
     ----------
-    time: period of time
-    slope: trend slope
+    time: numpy array
+        period of time
+    slope: float
+        trend slope
+
+    Returns
+    -------
+    numpy array
     """
     return slope * time
 
 
+""" Example
 # create evenly spaced values within a given interval
 time = np.arange(4 * 365 + 1)
 baseline = 10
@@ -48,13 +66,25 @@ series = trend(time, 0.2)
 plt.figure(figsize=(10, 6))
 plot_series(time, series, format='-', start=200, end=1000, label='serie')
 plt.show()
+"""
 
 
 ########################
 # Generate Seasonality #
 ########################
 def seasonal_pattern(season_time):
-    """Just an arbitrary pattern, you can change it if you wish"""
+    """Generate an arbitrary pattern for time series seasonality
+
+    Parameters
+    ----------
+    season_time: float
+
+
+    Returns
+    -------
+    Series
+
+    """
     # Un pattern pour les premiers 40% de la saisonnalité, un autre pour la suite
     return np.where(season_time < 0.4,
                     np.cos(season_time * 2 * np.pi),
@@ -63,17 +93,19 @@ def seasonal_pattern(season_time):
 
 def seasonality(time, period, amplitude=1, phase=1):
     """Repeats the same pattern at each period"""
-    # Phase sert à avoir le même pattern mais avec un lag par rapport au temps
+    # Phase sert à avoir le même pattern avec un lag par rapport au temps
     season_time = ((time + phase) % period) / period
     return amplitude * seasonal_pattern(season_time)
 
 
+"""
 amplitude = 40
 series = seasonality(time, period=365, amplitude=amplitude)
 
 plt.figure(figsize=(10, 6))
 plot_series(time, series)
 plt.show()
+"""
 
 ################################
 # Generate Trend + Seasonality #
