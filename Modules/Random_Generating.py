@@ -38,6 +38,11 @@ def plot_series(time, series, format="-", start=0, end=None, label=None):
     plt.grid(True)
 
 
+"""
+-------------------------------------------------------------------------------------------------------------
+"""
+
+
 # Generate Trend
 def trend(time, slope=0):
     """
@@ -189,4 +194,3 @@ def impulses(time, num_impulses, amplitude=1, seed=None):
     for index in impulse_indices:
         series[index] += rnd.rand() * amplitude
     return series
-
