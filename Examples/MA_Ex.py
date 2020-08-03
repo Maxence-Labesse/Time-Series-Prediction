@@ -1,10 +1,8 @@
-"""Time Series basis forecasting functions
-- ...
-- ...
-"""
-from Modules.Random_Generating import *
 import numpy as np
 import matplotlib.pyplot as plt
+from Modules.Random_Generating import *
+from Modules.MA_prediction import *
+from Modules.Metrics import *
 
 #################
 # Generating TS #
@@ -32,6 +30,7 @@ time_train = time[:split_time]
 x_train = series[:split_time]
 time_valid = time[split_time:]
 x_valid = series[split_time:]
+
 plt.figure(figsize=(10, 6))
 plot_series(time_train, x_train, label="Train")
 plt.show()
@@ -40,94 +39,38 @@ plt.figure(figsize=(10, 6))
 plot_series(time_valid, x_valid, label='Valid')
 plt.show()
 
-
 ###############
-# forecasting #
+# Forecasting #
 ###############
 
-# Moving average
-def moving_average_forecast(series, window_size):
-    """Compute the mean of the last few values
-    MA does not anticipate trend or seasonality
-
-    Parameters
-    ----------
-    series: np array
-        time Series
-    window_size:
-        number of values use for forecasting
-
-    Returns
-    -------
-    np array
-    """
-    forecast = []
-    for time in range(len(series) - window_size):
-        forecast.append(series[time:time + window_size].mean())
-    return np.array(forecast)
-
-
-"""
--------------------------------------------------------------------------------------------------------------
-"""
-
-
-# differencing series
-def diff_series(series, order):
-    """differencing time series
-
-    Parameters
-    ----------
-    series: np array
-        time series
-    order: int (default: 2)
-        differencing order
-
-    Returns
-    -------
-    np array
-    """
-    return series[order:] - series[:-order]
-
-
-# Example
-"""
-from Modules.Metrics import *
-
+# Moving Average
 moving_avg = moving_average_forecast(series, 30)[split_time - 30:]
-
 plt.figure(figsize=(10, 6))
-plot_series(time_valid, x_valid)
-plot_series(time_valid, moving_avg)
+plot_series(time_valid, x_valid, label='series')
+plot_series(time_valid, moving_avg, label="mobile average forecast")
 plt.show()
 
+# Differencing Series
 diff_series = diff_series(series, 365)
 diff_time = time[365:]
-plt.figure(figsize=(10, 6))
-plot_series(diff_time, diff_series)
-plt.show()
 
 # Moving average on diferenced TS
 diff_moving_avg = moving_average_forecast(diff_series, 50)[split_time - 365 - 50:]
-
 plt.figure(figsize=(10, 6))
-plot_series(time_valid, diff_series[split_time - 365:])
-plot_series(time_valid, diff_moving_avg)
+plot_series(time_valid, diff_series[split_time - 365:], label='series')
+plot_series(time_valid, diff_moving_avg, label='diff MA')
 plt.show()
 
 # Add trend and seasonality back
 diff_moving_avg_plus_past = series[split_time - 365:-365] + diff_moving_avg
-
 plt.figure(figsize=(10, 6))
-plot_series(time_valid, x_valid)
-plot_series(time_valid, diff_moving_avg_plus_past)
+plot_series(time_valid, x_valid, label='series')
+plot_series(time_valid, diff_moving_avg_plus_past, label='diff MA + past')
 plt.show()
 
 # MA on past values
 diff_moving_avg_plus_smooth_past = moving_average_forecast(series[split_time - 370:-360], 10) + diff_moving_avg
-
 plt.figure(figsize=(10, 6))
-plot_series(time_valid, x_valid)
-plot_series(time_valid, diff_moving_avg_plus_smooth_past)
+plot_series(time_valid, x_valid, label='series')
+plot_series(time_valid, diff_moving_avg_plus_smooth_past, label='smooth past + diff MA')
 plt.show()
-"""

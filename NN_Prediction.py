@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 print(tf.__version__)
 
-
 #################
 # Generating TS #
 #################
